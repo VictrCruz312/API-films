@@ -7,8 +7,8 @@ import ipdb
 class UserView(APIView):
     def get(self, request):
         users = User.objects.all()
-        serializer = UserSerializer(data=users, many=True)
-        return Response(serializer.initial_data, status=status.HTTP_200_OK)
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
