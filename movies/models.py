@@ -17,3 +17,12 @@ class Movie(models.Model):
     synopsis = models.TextField(null=True)
 
     user = models.ForeignKey(User, verbose_name="movies", on_delete=models.CASCADE)
+
+
+class MovieOrder(models.Model):
+    user = models.ForeignKey(User, verbose_name="movie_order", on_delete=models.CASCADE)
+    movie = models.ForeignKey(
+        Movie, verbose_name="movie_order", on_delete=models.CASCADE
+    )
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    buyed_at = models.DateTimeField(auto_now_add=True)
