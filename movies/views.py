@@ -6,6 +6,7 @@ from users.permissions import IsAdmOrReadOnly
 
 from movies.serializers import MovieOrderSerializer, MovieSerializer
 from .models import Movie
+from django.shortcuts import get_object_or_404
 
 
 class MovieView(APIView, pagination.PageNumberPagination):
@@ -37,23 +38,12 @@ class MovieByIdView(APIView):
     permission_classes = [IsAdmOrReadOnly]
 
     def get(self, request, movie_id):
-        try:
-            serializer = MovieSerializer(Movie.objects.get(id=movie_id))
-        except Movie.DoesNotExist:
-            return Response(
-                {"detail": f"Movie by id {movie_id} does not exists"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        serializer = MovieSerializer(get_object_or_404(Movie, id=movie_id))
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, movie_id):
-        try:
-            movie_delete = Movie.objects.get(pk=movie_id)
-        except Movie.DoesNotExist:
-            return Response(
-                {"detail": f"Movie by id {movie_id} does not exists"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        movie_delete = get_object_or_404(Movie, pk=movie_id)
 
         movie_delete.delete()
 
@@ -66,13 +56,7 @@ class MovieOrder(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, movie_id):
-        try:
-            movie = Movie.objects.get(id=movie_id)
-        except Movie.DoesNotExist:
-            return Response(
-                {"detail": f"Movie by id {movie_id} does not exists"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        movie = get_object_or_404(Movie, id=movie_id)
 
         serializer = MovieOrderSerializer(data=request.data)
 

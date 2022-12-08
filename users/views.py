@@ -1,5 +1,6 @@
 from rest_framework.views import APIView, Request, Response, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.shortcuts import get_object_or_404
 
 from users.permissions import IsAdmOrIsUser
 from .models import User
@@ -27,12 +28,6 @@ class UserByidView(APIView):
     permission_classes = [IsAdmOrIsUser]
 
     def get(self, request, user_id):
-        try:
-            serializer = UserSerializer(User.objects.get(id=user_id))
-        except User.DoesNotExist:
-            return Response(
-                {"detail": f"User by id {user_id} does not exists"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        serializer = UserSerializer(get_object_or_404(User, id=user_id))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
