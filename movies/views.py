@@ -1,22 +1,25 @@
 from rest_framework.views import APIView, Request, Response, status
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdmOrReadOnly
+from rest_framework import permissions, pagination
+from users.permissions import IsAdmOrReadOnly
 
 from movies.serializers import MovieOrderSerializer, MovieSerializer
 from .models import Movie
 
 
-class MovieView(APIView):
+class MovieView(APIView, pagination.PageNumberPagination):
     authentication_classes = [JWTAuthentication]
 
     permission_classes = [IsAdmOrReadOnly]
 
     def get(self, request):
-        serializer = MovieSerializer(Movie.objects.all(), many=True)
+        movies = Movie.objects.all()
+        result_page = self.paginate_queryset(movies, request, view=self)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = MovieSerializer(result_page, many=True)
+
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = MovieSerializer(data=request.data)
@@ -60,7 +63,7 @@ class MovieByIdView(APIView):
 class MovieOrder(APIView):
     authentication_classes = [JWTAuthentication]
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, movie_id):
         try:

@@ -33,6 +33,7 @@ class UserSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         if "is_employee" in validated_data:
-            return User.objects.create_superuser(**validated_data)
+            if validated_data["is_employee"]:
+                return User.objects.create_superuser(**validated_data)
 
         return User.objects.create_user(**validated_data)
