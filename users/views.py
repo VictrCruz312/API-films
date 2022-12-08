@@ -4,7 +4,6 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from users.permissions import IsAdmOrIsUser
 from .models import User
 from .serializers import UserSerializer
-import ipdb
 
 
 class UserView(APIView):
