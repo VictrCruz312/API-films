@@ -1,4 +1,4 @@
-# M5 - Kenzie Buster
+# API - de registro de filmes para usuários.
 
 ## Instalação dos pacotes de teste
 
